@@ -30,6 +30,6 @@ bool String::operator<(const String &b) const {
   return compare(str, b.str) < 0;
 }
 bool String::operator>(const String &b) const {
-  return compare(str, b.str) < 0;
+  return compare(str, b.str) > 0;
 }
 }  // namespace pr
