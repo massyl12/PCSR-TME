@@ -4,6 +4,7 @@
 #include <regex>
 #include <utility>
 #include <vector>
+
 #include "HT.h"
 
 int main() {
@@ -42,6 +43,8 @@ int main() {
   }
   input.close();
 
+  vector<pair<string, int>> cp = ht.get_vec();
+
   cout << "Finished Parsing War and Peace" << endl;
 
   auto end = steady_clock::now();
@@ -55,7 +58,8 @@ int main() {
   int toto = t == nullptr ? 0 : *t;
 
   cout << "Found a total of " << *ht.get("war") << " occurences of 'war'.\n";
-  cout << "Found a total of " << *ht.get("peace") << " occurences of 'peace'.\n";
+  cout << "Found a total of " << *ht.get("peace")
+       << " occurences of 'peace'.\n";
   cout << "Found a total of " << toto << " occurences of 'toto'.\n";
 
   return 0;

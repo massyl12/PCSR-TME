@@ -2,6 +2,7 @@
 #include <cstddef>
 #include <forward_list>
 #include <functional>
+#include <string>
 #include <vector>
 
 namespace pr {
@@ -39,7 +40,7 @@ class HashTable {
         return true;
       }
     }
-    buckets[h].emplace_front(Entry(key,value));
+    buckets[h].emplace_front(Entry(key, value));
     return false;
   }
   size_t size() const { return buckets.size(); }
@@ -53,6 +54,15 @@ class HashTable {
     }
     buckets.swap(n.buckets);
     n.buckets.clear();
+  }
+  std::vector<std::pair<std::string, int>> get_vec() {
+    std::vector<std::pair<std::string, int>> vec(buckets.size());
+    for (auto& l : buckets) {
+      for (auto& el : l) {
+        vec.push_back(std::make_pair(el.key, el.value));
+      }
+    }
+    return vec;
   }
 };
 }  // namespace pr
