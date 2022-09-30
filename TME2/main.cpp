@@ -7,6 +7,11 @@
 
 #include "HT.h"
 
+bool val_sort_decr(const std::pair<std::string, int> &a,
+                   const std::pair<std::string, int> &b) {
+  return (a.second > b.second);
+}
+
 int main() {
   using namespace std;
   using namespace std::chrono;
@@ -43,8 +48,6 @@ int main() {
   }
   input.close();
 
-  vector<pair<string, int>> cp = ht.get_vec();
-
   cout << "Finished Parsing War and Peace" << endl;
 
   auto end = steady_clock::now();
@@ -61,6 +64,16 @@ int main() {
   cout << "Found a total of " << *ht.get("peace")
        << " occurences of 'peace'.\n";
   cout << "Found a total of " << toto << " occurences of 'toto'.\n";
+
+  vector<pair<string, int>> vec = ht.get_vec();
+
+  sort(vec.begin(), vec.end(), val_sort_decr);
+
+  std::cout << "10 most frequent words are:\n";
+  for (auto i = 0; i < 10; i++) {
+    std::cout << vec[i].first << "\n";
+  }
+    std::cout << std::endl;
 
   return 0;
 }
