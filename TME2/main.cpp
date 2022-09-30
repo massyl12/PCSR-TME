@@ -4,6 +4,7 @@
 #include <regex>
 #include <utility>
 #include <vector>
+#include "HT.h"
 
 int main() {
   using namespace std;
@@ -19,20 +20,20 @@ int main() {
   string word;
   // une regex qui reconnait les caractères anormaux (négation des lettres)
   regex re(R"([^a-zA-Z])");
-  vector<pair<string, int>> vec;
+  pr::HashTable<string, int> ht(500);
+
   while (input >> word) {
     // élimine la ponctuation et les caractères spéciaux
     word = regex_replace(word, re, "");
     // passe en lowercase
     transform(word.begin(), word.end(), word.begin(), ::tolower);
-    auto it = std::find_if(vec.begin(), vec.end(), [&word](const auto& item) {
-      return std::get<0>(item) == word;
-    });
-    if (it != vec.end()) {
-      it->second++;
-    } else {
-      vec.push_back(make_pair(word, 0));
+    int *n = ht.get(word);
+    if (n == nullptr)
+      ht.put(word, 0);
+    else {
+      ht.put(word, *n + 1);
     }
+
     // word est maintenant "tout propre"
     // if (nombre_lu % 100 == 0)
     //   // on affiche un mot "propre" sur 100
@@ -45,33 +46,17 @@ int main() {
 
   auto end = steady_clock::now();
 
-  auto it = std::find_if(vec.begin(), vec.end(), [&word](const auto& item) {
-    return std::get<0>(item) == "war";
-  });
-  if (it != vec.end()) {
-    cout << "Found a total of " << it->second << " occurences of 'war'.\n";
-  }
-
-  it = std::find_if(vec.begin(), vec.end(), [&word](const auto& item) {
-    return std::get<0>(item) == "peace";
-  });
-  if (it != vec.end()) {
-    cout << "Found a total of " << it->second << " occurences of 'peace'.\n";
-  }
-
-  it = std::find_if(vec.begin(), vec.end(), [&word](const auto& item) {
-    return std::get<0>(item) == "toto";
-  });
-  if (it != vec.end()) {
-    cout << "Found a total of " << it->second << " occurences of 'toto'.\n";
-  } else {
-    cout << "Found a total of " << 0 << " occurences of 'toto'.\n";
-  }
-
   cout << "Parsing took " << duration_cast<milliseconds>(end - start).count()
        << "ms.\n";
 
   cout << "Found a total of " << nombre_lu << " words.\n";
+
+  int *t = ht.get("toto");
+  int toto = t == nullptr ? 0 : *t;
+
+  cout << "Found a total of " << *ht.get("war") << " occurences of 'war'.\n";
+  cout << "Found a total of " << *ht.get("peace") << " occurences of 'peace'.\n";
+  cout << "Found a total of " << toto << " occurences of 'toto'.\n";
 
   return 0;
 }
