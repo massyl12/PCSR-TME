@@ -2,6 +2,7 @@
 #include <fstream>
 #include <regex>
 #include <chrono>
+#include "HashMap.hh"
 /*
 Question 1.1
 Il y a 566193 mots
@@ -11,8 +12,9 @@ Question 1.3
 war : 298
 peace : 114
 Question 1.4
-Trés mauvaise complexité, l'accès dans une liste chainée (vector) est en O(n)
+Trés mauvaise complexité, la recherche dans une liste (vector) est en O(n)
 Pour un texte de n mots notre algorithme est en O(n²), la recherche des mots est trop couteuse
+
 */
 int main () {
 	using namespace std;
