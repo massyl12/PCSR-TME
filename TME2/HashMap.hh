@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <forward_list>
+#include <iterator>
 
 template<typename K,typename V>
 class HashMap{
@@ -41,3 +42,22 @@ class HashMap{
 		}
 	}
 };
+
+template<class iterator>
+size_t count(iterator begin, iterator end){
+	size_t res = 0;
+	for(begin; begin!=end;begin++){
+		res++;
+	}
+	return res;
+}
+
+template<class iterator, typename T>
+size_t count_if_equal(iterator begin, iterator end, const T & val){
+	size_t res = 0;
+	for(begin!=end;begin++){
+		if(*begin == val)
+			res++;
+	}
+	return res;
+}
