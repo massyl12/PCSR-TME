@@ -5,29 +5,39 @@
 template<typename K,typename V>
 class HashMap{
 	class Entry{
+		public:
 		const K key;
 		V value;
+		Entry(K key, V value) : key(key), value(value){}
 	};
 	typedef std::vector<std::forward_list<Entry>> buckets_t;
 	buckets_t buckets;
-	HashMap(size_t init = 100){
-		buckets.reserve(init);
-		for(size_t i=0; i < buckets.size(); i++){
-			std::forward_list<Entry> bucket = new std::forward_list<Entry>;
-			buckets[i].push_back(bucket);
-		}
-		
-	}
+	public:
+	HashMap(size_t init = 100) : buckets(init){}
 
 	V* get(const K &key){
 		size_t h = std::hash<K>()(key);
 		h = h % buckets.size();
-		for(size_t i=0; i<buckets.size();i++){
-			for(const Entry &entry : buckets[i]){
-				if(entry.key == key){
-					return entry.value;
-				}
+		for(Entry &entry : buckets[h]){
+			if(entry.key == key){
+				return &(entry.value);
 			}
+		}
+		return nullptr;
+	}
+
+	bool put(const K & key, const V & value){
+		size_t h = std::hash<K>()(key);
+		h = h % buckets.size();
+		V* entree = get(key);
+		if(entree){
+			*entree = value;
+			return true;
+		}
+		else{
+			Entry nouvelleEntree(key, value);
+			buckets[h].push_front(nouvelleEntree);
+			return false;
 		}
 	}
 };

@@ -30,12 +30,14 @@ int main () {
 	string word;
 	// une regex qui reconnait les caractères anormaux (négation des lettres)
 	regex re( R"([^a-zA-Z])");
-	vector<pair<string, int>> unique;
+	HashMap<string, int> unique;
+	//vector<pair<string, int>> unique;
 	while (input >> word) {
 		// élimine la ponctuation et les caractères spéciaux
 		word = regex_replace ( word, re, "");
 		// passe en lowercase
 		transform(word.begin(),word.end(),word.begin(),::tolower);
+		/*
 		bool trouve = false;
 		for(pair<string, int>& paire : unique){
 			if(paire.first == word){
@@ -47,20 +49,29 @@ int main () {
 			pair<string, int> nouvelle_paire(word, 1);
 			unique.push_back(nouvelle_paire);
 		}
-		/*
+		*/
+		int *valeur = unique.get(word);
+		if(valeur){
+			(*valeur)++;
+		}
+		else{
+			unique.put(word, 1);
+		}
 		// word est maintenant "tout propre"
+		/*
 		if (nombre_lu % 100 == 0)
 			// on affiche un mot "propre" sur 100
 			cout << nombre_lu << ": "<< word << endl;
 		*/
 	}
-
 	input.close();
+	/*
 	for(const pair<string, int> paire : unique){
 		if(paire.first == "war" || paire.first == "peace" || paire.first == "toto" ){
 			cout << paire.first << " : " << paire.second << endl;
 		}
 	}
+	*/
 	cout << "Finished Parsing War and Peace" << endl;
 
 	auto end = steady_clock::now();
