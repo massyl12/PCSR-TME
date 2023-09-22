@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <string>
 #include <ostream>
-
+#include <stdbool.h>
 namespace pr {
 
 class Chainon {
@@ -13,7 +13,7 @@ public :
 	Chainon * next;
 	Chainon (const std::string & data, Chainon * next=nullptr);
 	size_t length() ;
-	void print (std::ostream & os) const;
+    void print (std::ostream & os) const ;
 };
 
 class List {
@@ -31,21 +31,19 @@ public:
 		}
 	}
 
-	const std::string & operator[] (size_t index) const ;
+	const std::string & operator[] (size_t index) const;
 
-	void push_back (const std::string& val) ;
+	void push_back (const std::string& val);
 
-	void push_front (const std::string& val) {
-		tete = new Chainon(val,tete);
-	}
+    void push_front (const std::string& val);
 
-	bool empty() ;
+	bool empty();
 
 	size_t size() const ;
 };
 
 
-std::ostream & operator<< (std::ostream & os, const List & vec) ;
+std::ostream & operator<< (std::ostream & os, const pr::List & vec) ;
 
 } /* namespace pr */
 
