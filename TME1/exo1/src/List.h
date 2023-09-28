@@ -35,17 +35,18 @@ public:
 
 	void push_back (const std::string& val) ;
 
-	void push_front (const std::string& val) {
-		tete = new Chainon(val,tete);
-	}
+	/* FAUTE: La fonction est définie dans le .h et le .cpp. */
+	void push_front (const std::string& val);
 
 	bool empty() ;
+
+	friend std::ostream & operator<< (std::ostream & os, const List & vec) ;
 
 	size_t size() const ;
 };
 
-
-std::ostream & operator<< (std::ostream & os, const List & vec) ;
+/* FAUTE: la fonction amie est déclarée en dehors de la classe. Ajout du mot clé friend. */
+//std::ostream & operator<< (std::ostream & os, const List & vec) ;
 
 } /* namespace pr */
 

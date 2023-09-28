@@ -1,18 +1,24 @@
 #include "List.h"
 #include <string>
+#include <cstring>
 #include <iostream>
 #include <cstring>
 
 int main () {
 
-	std::string abc = "abc";
-	char * str = new char [3];
+	const std::string abc = "abc";
+	char * str = new char [4];
 	str[0] = 'a';
 	str[1] = 'b';
 	str[2] = 'c';
-	size_t i = 0;
 
-	if (! strcmp (str, abc.c_str())) {
+	/* FAUTE: Manque le charactere de fin de chaine. */
+	str[3] = '\0';
+
+	/* FAUTE: Typage mauvais. */
+	int i = 0;
+
+	if (!strcmp(str, abc.c_str())) {
 		std::cout << "Equal !";
 	}
 
@@ -28,11 +34,14 @@ int main () {
 		std::cout << "elt " << i << ": " << list[i] << std::endl;
 	}
 
+	/* FAUTE: Les champs de la chaîne n'ont pas besoin d'être libérés individuellement. */
 	// liberer les char de la chaine
-	for (char *cp = str ; *cp ; cp++) {
+	/*for (char *cp = str ; *cp ; cp++) {
 		delete cp;
-	}
-	// et la chaine elle meme
-	delete str;
+	}*/
+
+	/* FAUTE: Manque que les [] */
+	// et la chaîne elle même
+	delete[] str;
 
 }
