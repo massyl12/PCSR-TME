@@ -3,7 +3,7 @@ namespace pr {
 
 // ******************* Chainon
 
-Chainon::Chainon (const std::string & data, Chainon * next):data(data),next(next) {};
+Chainon::Chainon (const std::string & data, Chainon * next):data(data),next(next) {}
 
 size_t Chainon::length() {
     
