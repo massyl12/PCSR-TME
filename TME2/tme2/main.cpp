@@ -4,10 +4,12 @@
 #include <chrono>
 #include <vector>
 #include <string>
+#include "hash_map.h"
 
 int main () {
 	using namespace std;
 	using namespace std::chrono;
+	using namespace pr;
 
 	ifstream input = ifstream("./WarAndPeace.txt");
 
@@ -26,6 +28,12 @@ int main () {
 	//Question 3
 	std::vector<pair<string,int>> vect_pair;
 
+	//Question 6
+	HashTable<string, int> hm = HashTable<string, int>(30000); 
+
+	//Question 7
+	
+
 	regex re( R"([^a-zA-Z])");
 	while (input >> word) {
 		// élimine la ponctuation et les caractères spéciaux
@@ -36,7 +44,7 @@ int main () {
 		//Question 2
 		//On cherche s'il existe un mot différent
 		bool found = false;
-		for (int i=0; i<vect.size(); i++){
+		for (int i=0; i<vect.size(); ++i){
 			if (!word.compare(vect[i])){
 				found = true;
 				break;
@@ -51,7 +59,7 @@ int main () {
 
 		//Question 3
 		bool found2 = false;
-		for (int i=0; i<vect_pair.size(); i++){
+		for (int i=0; i<vect_pair.size(); ++i){
 			if (!word.compare(vect_pair[i].first)){
 				vect_pair[i].second++;
 				found2 =true;
@@ -60,9 +68,18 @@ int main () {
 		}
 
 		if (!found2){
-
 			vect_pair.push_back(pair<string,int>(word,1));
 		}
+
+		//Question 6
+		int * val = hm.get(word);
+		if (!val) {
+			hm.put(word, 0);
+		}
+		else {
+			hm.put(word, *val  + 1);
+		}
+		
 
 		// word est maintenant "tout propre"
 		if (nombre_lu % 100 == 0)
@@ -82,6 +99,7 @@ int main () {
     cout << "Found a total of " << nombre_lu << " words." << endl;
 	cout << "Found a total of " << nb_mots_differents << " different words." << endl;
 
+	//Question 3
 	bool found_war = false, found_peace = false, found_toto = false;
 	for (int i=0; i<vect_pair.size(); i++){
 		if (!(new string("war"))->compare(vect_pair[i].first)){
@@ -107,6 +125,30 @@ int main () {
 	if (!found_toto) {
 		cout << "Found a total of 0 toto." << endl;
 	}
+
+	//Question 6
+	/* int * nb = hm.get("war");
+	if (nb) {
+		cout << "Found a total of " << *nb << " war." << endl;
+	}
+	else {
+		cout << "Found a total of 0 war." << endl;
+	}
+	nb = hm.get("peace");
+	if (nb) {
+		cout << "Found a total of " << *nb << " peace." << endl;
+	}
+	else {
+		cout << "Found a total of 0 peace." << endl;
+	}
+	nb = hm.get("toto");
+	if (nb) {
+		cout << "Found a total of " << *nb << " toto." << endl;
+	}
+	else {
+		cout << "Found a total of 0 toto." << endl;
+	} */
+
 
     return 0;
 }
