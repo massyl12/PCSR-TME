@@ -1,16 +1,26 @@
-// Defines the HashTable item.
+#include <vector>
+using namespace std;
 
-typedef struct Ht_item
+template <typename k, typename v>
+    class Hashmap
 {
-    char* key;
-    char* value;
-} Ht_item;
+    struct Entry{
+        const k Key;
+        v value; 
+    };
+    vector <forward_list<Entry>> Buckets;
+    public :
+        Hashmap(size_t alloc) : Buckets(alloc) {}
+}
 
-// Defines the HashTable.
-typedef struct HashTable
-{
-    // Contains an array of pointers to items.
-    Ht_item** items;
-    int size;
-    int count;
-} HashTable;
+bool put(const k& Key, const v&value){
+    size_t n = std::hash<k>()(Key);
+    size_t target = k%Buckets.size();
+    for (auto &ent : Buckets[target]){
+        if (ent.key == key){
+            ent.value = value;
+            return true;
+        }
+    }
+}
+
