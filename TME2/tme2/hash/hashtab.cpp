@@ -6,11 +6,7 @@
 //
 
 #include "hashtab.hpp"
+ 
+    
 
-
-
-    
-    
-    
-    
 

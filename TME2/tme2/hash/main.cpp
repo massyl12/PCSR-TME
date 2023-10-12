@@ -7,11 +7,13 @@
 
 #include "main.hpp"
 #include "hashtab.hpp"
+#include "generic.hpp"
 #include <iostream>
 #include <fstream>
 #include <regex>
 #include <chrono>
 #include <vector>
+#include <utility>
 void inserer_mot(HashMap <string,int>& hash,string word,int* nb_mot){     //donner la reference de l'objet pour que le changement soit effectif
     hash.ensure_capacity();
     int nb_occur;
@@ -32,7 +34,7 @@ void inserer_mot(HashMap <string,int>& hash,string word,int* nb_mot){     //donn
 int main () {
     using namespace std;
     using namespace std::chrono;
-
+    
     ifstream input = ifstream("../WarAndPeace.txt");
     string s[3]={"war","peace","toto"};
     HashMap <string,int> hash (1000);                   //taille de hashmap de 20400  specification du type de K et V
@@ -46,7 +48,9 @@ int main () {
     // une regex qui reconnait les caractères anormaux (négation des lettres)
     regex re( R"([^a-zA-Z])");
     auto start = steady_clock::now();
+    vector<pair<string,int>> vec;
     int nb_mot_diff=0;
+    int cpt = 0;
     while (input >> word) {
         // élimine la ponctuation et les caractères spéciaux
         word = regex_replace ( word, re, "");
@@ -61,11 +65,11 @@ int main () {
         nombre_lu++;
         inserer_mot(hash,word,&nb_mot_diff);
     }
-    
+
 
     cout << "Finished Parsing War and Peace" << endl;
     
-    
+    //Looking for word : War, Peace, Toto
     for(int i=0;i<3;i++){
        const int *v = hash.get(s[i]);
         if(v){
@@ -85,10 +89,28 @@ int main () {
 
     cout << "Found a total of " << nombre_lu << " words." << endl;
     cout << "Found a totol of : "<<nb_mot_diff<<" differents words"<<endl;
+
+   
+    //Iterating into the hashmap Q5 TME3
+    for(auto i = hash.begin();i!=hash.end();++i){   //HashMap<string,int>::iterator  //??? pourquoi i++ ne fonctionne pas????
+       // cpt++;
+       // cout<<"CPT = "<<cpt<<endl;
+        vec.emplace_back(i->Key,i->Value);                      //definir operator -> si je veux utiliser i->Value ou ->Key
+    }
     
+    
+    //Q6 TME3
+    sort(vec.begin(), vec.end(), [] (pair<string,int> a, pair<string,int> b) { return b.second < a.second;} );
+    
+    for(int i = 0;i<10;i++){
+        cout << "Word : "<<vec[i].first<<" Number of occurence : "<<vec[i].second<<endl;
+    }
 
-
-
+    //cout<< "Nb element in vec = "<<vec.size()<<endl;
+    
+    
+    size_t co = count(vec.begin(),vec.end());
+    cout<<"Count : << "<<co<<endl;
     return 0;
 }
 
