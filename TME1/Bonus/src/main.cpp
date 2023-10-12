@@ -1,5 +1,5 @@
 #include <iostream>
-#include "String.hpp"
+#include "..\include\String.hpp"
 
 int main() {
     pr::String x("Le penseur");
