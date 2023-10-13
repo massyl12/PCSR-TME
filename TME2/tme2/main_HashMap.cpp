@@ -52,6 +52,18 @@ int main () {
 	}
 	input.close();
 
+	std::vector<pair<string, int>> vectorFromHashMap;
+	for (const auto& bucket : table.buckets) {
+		vectorFromHashMap.insert(vectorFromHashMap.end(), bucket.begin(), bucket.end());
+	}
+
+    std::sort(vectorFromHashMap.begin(), vectorFromHashMap.end(),[] (const pair<string,int> & a, const pair<string,int> & b) {
+    	return a.second > b.second ;}
+    );
+
+    for(int i=0;i<10;++i){
+    	cout << vectorFromHashMap.at(i).first << "----------" << vectorFromHashMap.at(i).second << std::endl;
+    }
  	cout << "Finished Parsing War and Peace" << endl;
 
 	auto end = steady_clock::now();

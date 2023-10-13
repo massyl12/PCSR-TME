@@ -11,6 +11,7 @@
 
 #include <vector>
 #include <forward_list>
+#include <iterator>
 
 using namespace std;
 
@@ -23,11 +24,15 @@ namespace pr {
 					const K key;
 					V value;
 					Entry(const K &k,const V& v):key(k),value(v){}
+					operator pair<K,V>() const {
+						return make_pair(key,value);
+					}
 			};
 		private:
-			vector<forward_list<Entry>> buckets;
+
 			size_t sz;
 		public:
+			vector<forward_list<Entry>> buckets;
 			HashMap(size_t size) : sz(0) {
 				buckets.reserve(size);
 				for(size_t i=0; i<size ;i++){
@@ -60,7 +65,9 @@ namespace pr {
 				return sz;
 			}
 			void grow() {
-				buckets.resize(buckets.size()*2);
+				if(buckets.size()*0.8 <= sz){
+					buckets.resize(buckets.size()*2);
+				}
 			}
 	};
 };
