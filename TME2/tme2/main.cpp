@@ -6,51 +6,15 @@
 #include <string>
 #include <forward_list>
 #include <algorithm>
+#include "HashMap.hpp"
 using namespace std;
-
-template <typename k, typename v>
-class Hashmap {
-    struct Entry {
-        const k Key;
-        v value;
-    };
-    vector<forward_list<Entry>> Buckets;
-
-public:
-    Hashmap(size_t alloc) : Buckets(alloc) {}
-
-    bool put(const k& Key, const v& value) {
-        size_t n = std::hash<k>()(Key);
-        size_t target = n % Buckets.size();
-
-        for (auto &ent : Buckets[target]) {
-            if (ent.Key == Key) {
-                ent.value++; // Incrémente la valeur existante.
-                return true; // La clé existe déjà, mise à jour de la valeur.
-            }
-        }
-
-        // La clé n'existe pas, ajoutez une nouvelle entrée avec une valeur de 1.
-        Buckets[target].push_front({Key, 1});
-        return true;
-    }
-
-	const forward_list<Entry>& getBucket(size_t index) const {
-        if (index < Buckets.size()) {
-            return Buckets[index];
-        }
-        throw out_of_range("Bucket index out of range");
-    }
-
-};
-
 
 int main () {
 	using namespace std;
 	using namespace std::chrono;
 	
 	// vector< std::pair<string,int> > Vector_word;
-	Hashmap<string,int> Mymap(10);
+	pr::HashMap<string,int> Mymap(10);
 
 	ifstream input = ifstream("./WarAndPeace.txt");
 
