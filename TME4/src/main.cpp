@@ -3,11 +3,18 @@
 using namespace std;
 
 const int NB_THREAD = 10;
+
+bool transfer(int idDebit, int  idCredit, size_t val){	
+
+}
 int main () {
 	vector<thread> threads;
-	// TODO : creer des threads qui font ce qui est demandé
+	threads.reserve(NB_THREAD);
 
+	for(size_t i = 0; i< NB_THREAD; ++i){
+		threads.push_back(thread());
 
+	}
 	for (auto & t : threads) {
 		t.join();
 	}

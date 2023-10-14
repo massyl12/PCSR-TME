@@ -8,12 +8,13 @@ namespace pr {
 
 template <typename k, typename v>
 class HashMap {
+private :
     struct Entry {
         const k Key;
         v value;
     };
     std::vector<std::forward_list<Entry>> Buckets;
-    std :: 
+    iterator it = buckets.ends;
 
 public:
     HashMap(size_t alloc);
@@ -22,6 +23,7 @@ public:
 
     const std::forward_list<Entry>& getBucket(size_t index) const;
 };
+
 
 template <typename k, typename v>
 HashMap<k, v>::HashMap(size_t alloc) : Buckets(alloc) {}
@@ -50,6 +52,8 @@ const std::forward_list<typename HashMap<k, v>::Entry>& HashMap<k, v>::getBucket
     }
     throw std::out_of_range("Bucket index out of range");
 }
+
+
 
 }  // namespace pr
 
