@@ -26,4 +26,15 @@ Compte::Compte(const Compte & other) {
 	other.m.unlock();
 }
 
+	void Compte::lock() const{
+		m.lock();
+
+	}
+	void Compte::unlock() const{
+		m.unlock();
+	}
+	bool Compte::trylock() const{
+		return m.try_lock();
+	}
+
 }
