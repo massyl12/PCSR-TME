@@ -12,7 +12,7 @@ const size_t NB_TRANSACTION = 1000;
 
 void transaction(size_t nbcompte, pr::Banque &B) {
 	cout<< "Creation de la transaction" <<endl;
-    for (auto it = 0; it < NB_TRANSACTION; ++it) {
+    for (size_t it = 0; it < NB_TRANSACTION; ++it) {
         size_t i = rand() % nbcompte;
         size_t j = rand() % nbcompte;
         int m = rand() % 99 + 1;
@@ -32,11 +32,17 @@ int main () {
     for(size_t i = 0; i < NB_THREAD; ++i) {
         threads.emplace_back(thread(transaction, NB_Compte, std::ref(B)));
     }
+   
 
     for (auto &t : threads) {
         t.join();
     }
 
-    // TODO : tester solde = NB_THREAD * JP
+    thread test(&pr::Banque::comptabiliser, ref(B), 100);
+
+    test.join();
+
+    /*Question 7 et 8 Bilan comptable faux : attendu 100 obtenu : 2000
+    */
     return 0;
 }
