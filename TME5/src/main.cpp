@@ -8,9 +8,10 @@
 #include <limits>
 #include <random>
 #define TAILLEQUEUE 1000
-#define NBTHREAD 30
+#define NBTHREAD 16
 using namespace std;
 using namespace pr;
+
 
 
 void fillScene(Scene & scene, default_random_engine & re) {
@@ -109,15 +110,16 @@ class DrawJob : public Job {
     Color * pixels;
     
 public :
-    DrawJob(const Scene::screen_t & screen, int x,int y, const Scene & scene) : screen(screen), x(x), y(y), scene(scene), lights(lights), pixels(pixels){}
+    DrawJob(const Scene::screen_t & screen, int x,int y, const Scene & scene,vector<Vec3D> & lights,Color * pixels) : screen(screen), x(x), y(y), scene(scene), lights(lights), pixels(pixels){}
     void run () {
+        
         // le point de l'ecran par lequel passe ce rayon
         auto & screenPoint = screen[y][x];
         // le rayon a inspecter
         Rayon  ray(scene.getCameraPos(), screenPoint);
-
+        
         int targetSphere = findClosestInter(scene, ray);
-
+        
         if (targetSphere == -1) {
             // keep background color
             return;
@@ -125,11 +127,13 @@ public :
             const Sphere & obj = *(scene.begin() + targetSphere);
             // pixel prend la couleur de l'objet
             Color finalcolor = computeColor(obj, ray, scene.getCameraPos(), lights);
+            
             // le point de l'image (pixel) dont on vient de calculer la couleur
             Color & pixel = pixels[y*scene.getHeight() + x];
             // mettre a jour la couleur du pixel dans l'image finale.
             pixel = finalcolor;
         }
+        
     }
     ~DrawJob(){}
 };
@@ -161,14 +165,15 @@ int main () {
 
 	// Les couleurs des pixels dans l'image finale
 	Color * pixels = new Color[scene.getWidth() * scene.getHeight()];
-    p.start(NBTHREAD);
+    pool.start(NBTHREAD);
 	// pour chaque pixel, calculer sa couleur
 	for (int x =0 ; x < scene.getWidth() ; x++) {
 		for (int  y = 0 ; y < scene.getHeight() ; y++) {
-            
-                
+            pool.submit(new DrawJob(ref(screen),x,y,ref(scene),ref(lights),pixels));
 		}
 	}
+   
+    
 
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 	    std::cout << "Total time "
@@ -176,7 +181,8 @@ int main () {
 	              << "ms.\n";
 
 	exportImage("toto.ppm",scene.getWidth(), scene.getHeight() , pixels);
-
+    
+    delete []pixels;
 	return 0;
 }
 

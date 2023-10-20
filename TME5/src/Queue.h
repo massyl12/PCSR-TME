@@ -15,7 +15,7 @@ class Queue {
 	size_t begin;
 	size_t sz;
 	mutable std::mutex m;
-    std::condition_variable cv;                 //pour recevoir un recursive mutex
+    std::condition_variable cv;
     bool isBlocking;
 
 	// fonctions private, sans protection mutex car le seul moyen de l'appeler c'est dans push/pop donc on a deja le lock de la classe
@@ -37,7 +37,7 @@ public:
 	T* pop() {
 		std::unique_lock<std::mutex> lg(m);
 		while (empty() && isBlocking) {
-            cv.wait(m);
+            cv.wait(lg);
 		}
         
         if(!isBlocking && empty()) return nullptr;
@@ -52,7 +52,7 @@ public:
 	bool push(T* elt) {
 		std::unique_lock<std::mutex> lg(m);
 		while (full()) {
-            cv.wait(m);
+            cv.wait(lg);
 		}
 		tab[(begin + sz) % allocsize] = elt;
 		sz++;
@@ -63,6 +63,7 @@ public:
     void setisBlocking(bool b){
         std::unique_lock<std::mutex> lg(m);
         isBlocking = b;
+        cv.notify_all();       //Notify everyone to let them notice that we changed the rule (blocking or not)
     }
 	~Queue() {
 		// ?? lock a priori inutile, ne pas detruire si on travaille encore avec
