@@ -1,6 +1,9 @@
 #include "Vec3D.h"
 #include "Rayon.h"
 #include "Scene.h"
+#include "Pool.h"
+#include "PixelJob.h"
+#include "Barrier.h"
 #include <iostream>
 #include <algorithm>
 #include <fstream>
@@ -32,6 +35,7 @@ void fillScene(Scene & scene, default_random_engine & re) {
 
 // return the index of the closest object in the scene that intersects "ray"
 // or -1 if the ray does not intersect any object.
+/*
 int findClosestInter(const Scene & scene, const Rayon & ray) {
 	auto minz = std::numeric_limits<float>::max();
 	int targetSphere = -1;
@@ -48,9 +52,11 @@ int findClosestInter(const Scene & scene, const Rayon & ray) {
 	}
 	return targetSphere;
 }
+*/
 
 // Calcule l'angle d'incidence du rayon à la sphere, cumule l'éclairage des lumières
 // En déduit la couleur d'un pixel de l'écran.
+/*
 Color computeColor(const Sphere & obj, const Rayon & ray, const Vec3D & camera, std::vector<Vec3D> & lights) {
 	Color finalcolor = obj.getColor();
 
@@ -77,7 +83,7 @@ Color computeColor(const Sphere & obj, const Rayon & ray, const Vec3D & camera, 
 	finalcolor = finalcolor * dt + finalcolor * 0.2; // *0.2 = lumiere speculaire ambiante
 
 	return finalcolor;
-}
+}*/
 
 // produit une image dans path, représentant les pixels.
 void exportImage(const char * path, size_t width, size_t height, Color * pixels) {
@@ -124,29 +130,13 @@ int main () {
 
 	// Les couleurs des pixels dans l'image finale
 	Color * pixels = new Color[scene.getWidth() * scene.getHeight()];
-
+	Pool pool(16);
+	Barrier b(scene.getWidth()*scene.getHeight());
+	pool.start(16);
 	// pour chaque pixel, calculer sa couleur
 	for (int x =0 ; x < scene.getWidth() ; x++) {
 		for (int  y = 0 ; y < scene.getHeight() ; y++) {
-			// le point de l'ecran par lequel passe ce rayon
-			auto & screenPoint = screen[y][x];
-			// le rayon a inspecter
-			Rayon  ray(scene.getCameraPos(), screenPoint);
-
-			int targetSphere = findClosestInter(scene, ray);
-
-			if (targetSphere == -1) {
-				// keep background color
-				continue ;
-			} else {
-				const Sphere & obj = *(scene.begin() + targetSphere);
-				// pixel prend la couleur de l'objet
-				Color finalcolor = computeColor(obj, ray, scene.getCameraPos(), lights);
-				// le point de l'image (pixel) dont on vient de calculer la couleur
-				Color & pixel = pixels[y*scene.getHeight() + x];
-				// mettre a jour la couleur du pixel dans l'image finale.
-				pixel = finalcolor;
-			}
+			pool.submit(new PixelJob(x,y,screen,pixels,scene,lights,&b));
 
 		}
 	}

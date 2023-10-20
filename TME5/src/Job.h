@@ -1,5 +1,6 @@
 #pragma once
 
+
 namespace pr {
 
 class Job {
@@ -30,5 +31,8 @@ public :
 	~SleepJob(){}
 };
 **/
+
+// return the index of the closest object in the scene that intersects "ray"
+// or -1 if the ray does not intersect any object.
 
 }
