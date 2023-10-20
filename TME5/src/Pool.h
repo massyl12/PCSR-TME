@@ -12,10 +12,11 @@ class Pool {
 	std::vector<std::thread> threads;
 public:
 	Pool(int qsize) ;
+    void poolworker();
 	void start (int nbthread);
 	void submit (Job * job) ;
-	void stop() ;
-	~Pool() ;
+	void stop();
+	~Pool();
 };
 
 }
