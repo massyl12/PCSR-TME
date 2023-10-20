@@ -36,7 +36,7 @@ public:
 	}
 	T* pop() {
 		std::unique_lock<std::mutex> lg(m);
-		while (empty() && isBlocking) {
+		while (empty() && isBlocking) {  //either the queue table is empty but we still need the thread to wait to perform works, or we have done all the work and we don't need the thread to wait here anymore and can join him
             cv.wait(lg);
 		}
         
