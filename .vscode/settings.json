@@ -76,7 +76,10 @@
     "xloctime": "cpp",
     "xmemory": "cpp",
     "xstddef": "cpp",
-    "xtr1common": "cpp"
+    "xtr1common": "cpp",
+    "map": "cpp",
+    "string_view": "cpp",
+    "shared_mutex": "cpp"
   },
   "githubPullRequests.ignoredPullRequestBranches": [
     "master"

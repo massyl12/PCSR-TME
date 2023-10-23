@@ -2,7 +2,9 @@
 #define SRC_QUEUE_H_
 
 #include <cstdlib>
+#include <condition_variable>
 #include <mutex>
+#include <cstring>
 
 namespace pr {
 
@@ -14,7 +16,7 @@ class Queue {
 	size_t begin;
 	size_t sz;
 	mutable std::mutex m;
-	bool is_Blocking = true;
+	bool isBlocking = true;
 	std::condition_variable cv;
 
 	// fonctions private, sans protection mutex
@@ -36,7 +38,7 @@ public:
 	T* pop() {
 		std::unique_lock<std::mutex> lg(m);
 		while (empty() && isBlocking) {
-			cv.wait(lck);
+			cv.wait(lg);
 		}
 		if (empty()) {
 			return nullptr;
@@ -64,13 +66,13 @@ public:
 		tab[(begin + sz) % allocsize] = elt;
 		sz++;
 		return true;
-
-	bool setBlocking(bool b){
+	}
+	void setBlocking(bool b){
 		std::unique_lock<std::mutex> lg(m);
-		is_Blocking = b;
-		cv.pop.notify.all();
+		isBlocking = b;
+		cv.notify_all();
 	}
-	}
+	
 	~Queue() {
 		// ?? lock a priori inutile, ne pas detruire si on travaille encore avec
 		for (size_t i = 0; i < sz; i++) {
