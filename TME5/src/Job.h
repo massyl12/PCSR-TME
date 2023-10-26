@@ -13,7 +13,7 @@ public:
 
 /**
 class SleepJob : public Job {
-	int calcul (int v) {
+	int calcul (int Pixelv) {
 		std::cout << "Computing for arg =" << v << std::endl;
 		// traiter un gros calcul
 		this_thread::sleep_for(1s);

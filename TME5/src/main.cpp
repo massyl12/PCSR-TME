@@ -111,9 +111,9 @@ void exportImage(const char * path, size_t width, size_t height, Color * pixels)
 
 int main () {
 
-	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+	chrono::steady_clock::time_point start = chrono::steady_clock::now();
 	// on pose une graine basee sur la date
-	default_random_engine re(std::chrono::system_clock::now().time_since_epoch().count());
+	default_random_engine re(chrono::system_clock::now().time_since_epoch().count());
 	// definir la Scene : resolution de l'image
 	Scene scene (1000,1000);
 	// remplir avec un peu d'aléatoire
@@ -130,25 +130,30 @@ int main () {
 	// on tire un rayon de l'observateur vers chacun de ces points
 	const Scene::screen_t & screen = scene.getScreenPoints();
 
-	// Les couleurs des pixels dans l'image finale
+	// Les couleurs des pixelsjob dans l'image finale
 	Color * pixels = new Color[scene.getWidth() * scene.getHeight()];
 	Pool pool(16);
-	pr::Barrier b(scene.getWidth()*scene.getHeight());
+	Barrier b(scene.getWidth()*scene.getHeight());
 	pool.start(N);
 	// pour chaque pixel, calculer sa couleur
 	for (int x =0 ; x < scene.getWidth() ; x++) {
-		for (int  y = 0 ; y < scene.getHeight() ; y++) {
+		for (int  y = 0 ; y < scene.getHeight() ; y++){
 			pool.submit(new PixelJob(x,y,screen,pixels,scene,lights,&b));
-
+			cout << x << ", " << y << " submitting job" << endl;
 		}
 	}
+	cout << "hi" << endl;
+	b.waitFor();
+	pool.stop();
 
-	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-	    std::cout << "Total time "
-	              << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
+
+	chrono::steady_clock::time_point end = chrono::steady_clock::now();
+	    cout << "Total time "
+	              << chrono::duration_cast<chrono::milliseconds>(end - start).count()
 	              << "ms.\n";
 
 	exportImage("toto.ppm",scene.getWidth(), scene.getHeight() , pixels);
+	delete[] pixels;
 
 	return 0;
 }

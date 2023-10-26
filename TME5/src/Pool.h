@@ -32,6 +32,7 @@ Pool::Pool(int qsize): queue(qsize){
 }
 
 void Pool::start (int nbthread){
+	std::cout << "starting thread" << std::endl;
 	for(int i=0;i<nbthread;i++){
 		threads.emplace_back(poolWorker,std::ref(queue));
 	}
@@ -43,6 +44,7 @@ void Pool::submit(Job* job){
 
 
 void Pool::stop(){
+	std::cout << "waiting threads finishing" << std::endl;
 	queue.setBlocking(false);
 	for(auto& t : threads){
 		t.join();
