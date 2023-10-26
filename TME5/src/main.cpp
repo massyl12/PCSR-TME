@@ -13,6 +13,8 @@
 using namespace std;
 using namespace pr;
 
+#define N 8
+
 
 void fillScene(Scene & scene, default_random_engine & re) {
 	// Nombre de spheres (rend le probleme plus dur)
@@ -131,8 +133,8 @@ int main () {
 	// Les couleurs des pixels dans l'image finale
 	Color * pixels = new Color[scene.getWidth() * scene.getHeight()];
 	Pool pool(16);
-	Barrier b(scene.getWidth()*scene.getHeight());
-	pool.start(16);
+	pr::Barrier b(scene.getWidth()*scene.getHeight());
+	pool.start(N);
 	// pour chaque pixel, calculer sa couleur
 	for (int x =0 ; x < scene.getWidth() ; x++) {
 		for (int  y = 0 ; y < scene.getHeight() ; y++) {

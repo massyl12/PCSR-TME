@@ -20,14 +20,13 @@ class Barrier {
 	int cpt;
 	const int goal;
 public:
-	Barrier(int goal);
-	virtual ~Barrier();
+	Barrier(int goal):cpt(0),goal(goal){}
+	virtual ~Barrier(){}
 	void done();
 	void waitFor();
 };
 
-Barrier::Barrier(int goal):cpt(0),goal(goal){
-}
+
 
 void Barrier::done(){
 	std::unique_lock<std::mutex> lg(m);
