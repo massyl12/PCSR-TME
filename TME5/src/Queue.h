@@ -16,7 +16,7 @@ class Queue {
 	size_t begin;
 	size_t sz;
 	mutable std::mutex m;
-	bool isBlocking = true;
+	bool isBlocking = false;
 	std::condition_variable cv;
 
 	// fonctions private, sans protection mutex

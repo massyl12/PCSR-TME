@@ -3,6 +3,7 @@
 #include "Scene.h"
 #include <iostream>
 #include "Pool.h"
+#include "Barier.h"
 
 using namespace std;
 using namespace pr;
@@ -81,12 +82,10 @@ int main () {
 	Color * pixels = new Color[scene.getWidth() * scene.getHeight()];
     Pool pool(10);
     pool.start(NB_THREAD);
-    Barier b(NBJOB);
-    for (int x =0 ; x < scene.getWidth() ; x++) {
+    Barrier b(NBJOB);
+    for (int x =0 ;	 x < scene.getWidth() ; x++) {
 		for (int  y = 0 ; y < scene.getHeight() ; y++) {
-
-            pool.submit(new DrawPixelJob(scene, screen, lights, *pixels, x, y, &b));
-            
+            pool.submit(new DrawPixelJob(scene, screen, lights, pixels, x, y, b));
         }
     }
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();

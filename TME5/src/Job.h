@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <fstream>
 #include <limits>
+#include "Barier.h"
 
 namespace pr {
 using namespace std;
@@ -74,12 +75,12 @@ class DrawPixelJob : public Job {
 	Color * pixels;
 	vector<Vec3D> lights;
 	int x,y;
-	Barier *barier;
+	Barrier &barrier;
 
 	public : 
-	DrawPixelJob(const Scene &s, Scene::screen_t screen, vector<Vec3D> l, Color &p, int x, int y, Barier *b) : scene(s), screen(screen), lights(l), pixels(&p), x(x), y(y), barier(b) {}
+	DrawPixelJob(const Scene &s, Scene::screen_t screen, vector<Vec3D> l, Color *p, int x, int y, Barrier b) 
+	: scene(s), screen(screen), lights(l), pixels(p), x(x), y(y), barrier(b) {}
 	void run(){
-	
 			// le point de l'ecran par lequel passe ce rayon
 			auto & screenPoint = screen[y][x];
 			// le rayon a inspecter
@@ -98,7 +99,7 @@ class DrawPixelJob : public Job {
 				Color & pixel = pixels[y*scene.getHeight() + x];
 				// mettre a jour la couleur du pixel dans l'image finale.
 				pixel = finalcolor;
-				barier->done();
+				barrier->done();
 			}
 
 		}
