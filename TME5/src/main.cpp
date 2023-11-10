@@ -108,9 +108,10 @@ class DrawJob : public Job {
     const Scene &scene;
     vector<Vec3D> & lights;
     Color * pixels;
+	Barrier &b;
     
 public :
-    DrawJob(const Scene::screen_t & screen, int x,int y, const Scene & scene,vector<Vec3D> & lights,Color * pixels) : screen(screen), x(x), y(y), scene(scene), lights(lights), pixels(pixels){}
+    DrawJob(const Scene::screen_t & screen, int x,int y, const Scene & scene,vector<Vec3D> & lights,Color * pixels,Barrier &b) : screen(screen), x(x), y(y), scene(scene), lights(lights), pixels(pixels),b(b){}
     void run () {
         // le point de l'ecran par lequel passe ce rayon
         auto & screenPoint = screen[y][x];
@@ -132,6 +133,7 @@ public :
             // mettre a jour la couleur du pixel dans l'image finale.
             pixel = finalcolor;
         }
+		b.done();
         
     }
     ~DrawJob(){}
@@ -144,9 +146,9 @@ class DrawJob1 : public Job {
     const Scene &scene;
     vector<Vec3D> & lights;
     Color * pixels;
-    
+    Barrier &b;
 public :
-    DrawJob1(const Scene::screen_t & screen, int x, const Scene & scene,vector<Vec3D> & lights,Color * pixels) : screen(screen), x(x), scene(scene), lights(lights), pixels(pixels){}
+    DrawJob1(const Scene::screen_t & screen, int x, const Scene & scene,vector<Vec3D> & lights,Color * pixels,Barrier &b) : screen(screen), x(x), scene(scene), lights(lights), pixels(pixels),b(b){}
     void run () {
         for (int  y = 0 ; y < scene.getHeight() ; y++){
 		    // le point de l'ecran par lequel passe ce rayon
@@ -156,7 +158,7 @@ public :
 			
 			int targetSphere = findClosestInter(scene, ray);
             if(y == 999){
-                cout<<"[y] "<<y<<" [x] "<<x<<endl;
+                //cout<<"[y] "<<y<<" [x] "<<x<<endl;
             }
 			
 			if (targetSphere == -1) {
@@ -175,6 +177,7 @@ public :
             }
             
         }
+		b.done();
         
     }
     ~DrawJob1(){}
@@ -187,6 +190,7 @@ public :
 
 int main () {
     Pool pool(TAILLEQUEUE);
+	
 	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 	// on pose une graine basee sur la date
 	default_random_engine re(std::chrono::system_clock::now().time_since_epoch().count());
@@ -208,25 +212,27 @@ int main () {
 
 	// Les couleurs des pixels dans l'image finale
 	Color * pixels = new Color[scene.getWidth() * scene.getHeight()];
+	//Barrier b(scene.getWidth() *scene.getHeight());
+	Barrier b(scene.getWidth());
     pool.start(NBTHREAD);
 	// pour chaque pixel, calculer sa couleur
 	for (int x =0 ; x < scene.getWidth() ; x++) {
 		/*for (int  y = 0 ; y < scene.getHeight() ; y++) {
-            pool.submit(new DrawJob(ref(screen),x,y,ref(scene),ref(lights),pixels)); //2,68 s for 1 job = 1 pixel
+            pool.submit(new DrawJob(ref(screen),x,y,ref(scene),ref(lights),pixels,ref(b))); //10s  for 1 job = 1 pixel
             
 		}*/
         //cout << "scene.height into main = "<<scene.getHeight()<<endl;
        // cout<<"X : "<<x<<endl;
-       pool.submit(new DrawJob1(ref(screen),x,ref(scene),ref(lights),pixels));  //44 ms  for 1 job = 1 column
+       pool.submit(new DrawJob1(ref(screen),x,ref(scene),ref(lights),pixels,ref(b)));  //44 ms  for 1 job = 1 column
 	}
    
-    
-
+    b.wait_for();
+	
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 	    std::cout << "Total time "
 	              << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
 	              << "ms.\n";
-
+	pool.stop();    //Why joining threads takes so much time?
 	exportImage("toto.ppm",scene.getWidth(), scene.getHeight() , pixels);
     
     delete []pixels;
