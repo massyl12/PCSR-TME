@@ -15,8 +15,7 @@ public:
 	void done(){
 		std::unique_lock<std::mutex> lg(m);
 		cpt++;
-		if(cpt >=N)
-		cv.notify_all();
+		if(cpt == N) cv.notify_all();
 	}
 
 	void waitFor(){

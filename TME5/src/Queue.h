@@ -29,7 +29,7 @@ class Queue {
 public:
 	Queue(size_t size) :allocsize(size), begin(0), sz(0) {
 		tab = new T*[size];
-		memset(tab, 0, size * sizeof(T*));
+		std::memset(tab, 0, size * sizeof(T*));
 	}
 	size_t size() const {
 		std::unique_lock<std::mutex> lg(m);
@@ -69,8 +69,10 @@ public:
 	}
 	void setBlocking(bool b){
 		std::unique_lock<std::mutex> lg(m);
-		isBlocking = b;
-		cv.notify_all();
+		this->isBlocking = b;
+		if (isBlocking == false) {
+			cv.notify_all();
+		}
 	}
 	
 	~Queue() {
