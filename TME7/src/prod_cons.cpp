@@ -24,6 +24,9 @@ void consomateur (Stack<char> * stack) {
 
 int main () {
 	Stack<char> * s = new Stack<char>();
+	if(pid){
+		sem_unlink("/monsem0");
+	}
 
 	pid_t pp = fork();
 	if (pp==0) {
