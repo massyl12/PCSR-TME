@@ -20,7 +20,7 @@ class Stack {
 public :
 	Stack () : sz(0) { 
 		int a;
-		//sem_init(&sem_prod,1,STACKSIZE);
+		sem_init(&sem_prod,1,STACKSIZE);
 		sem_init(&sem_cons,1,0);
 		sem_init(&mutex,1,1);
 		sem_getvalue(&sem_prod,&a);
