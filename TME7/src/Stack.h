@@ -2,9 +2,11 @@
 
 #include <cstring> // size_t,memset
 #include <semaphore.h>
+#include <iostream>
+#include <pthread.h>
 namespace pr {
 
-#define STACKSIZE 100
+#define STACKSIZE 10
 
 using namespace std;
 template<typename T>
@@ -17,9 +19,16 @@ class Stack {
 
 public :
 	Stack () : sz(0) { 
-		sem_init(&sem_prod,0,STACKSIZE);
+		int a;
+		//sem_init(&sem_prod,0,STACKSIZE);
 		sem_init(&sem_cons,0,0);
 		sem_init(&mutex,0,1);
+		sem_getvalue(&sem_prod,&a);
+		if (sem_init(&sem_prod,0,STACKSIZE) == -1){
+			perror("sem_init ");
+			
+		}
+		cout<<"Value of semaphore producteur = "<<a<<endl;
 		memset(tab,0,sizeof tab) ;}
 
 	T pop () {
@@ -39,6 +48,11 @@ public :
 		tab[sz++] = elt;
 		sem_post(&mutex);
 		sem_post(&sem_cons);
+	}
+	~Stack(){
+
+
+
 	}
 };
 
