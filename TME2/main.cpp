@@ -14,11 +14,11 @@ int main () {
 	using namespace std::chrono;
 	
 	// vector< std::pair<string,int> > Vector_word;
-	pr::HashMap<string,int> Mymap(10);
+	pr::HashMap<string,int> Mymap(10); //declaration table
 
 	ifstream input = ifstream("./WarAndPeace.txt");
 
-	auto start = steady_clock::now();
+	auto start = steady_clock::now(); //debut calclul temps
 	cout << "Parsing War and Peace" << endl;
 
 	size_t nombre_lu = 0;
@@ -53,7 +53,7 @@ int main () {
 
 	cout << "Finished Parsing War and Peace" << endl;
 
-	auto end = steady_clock::now();
+	auto end = steady_clock::now(); //fin du calcul du temps
     cout << "Parsing took "
               << duration_cast<milliseconds>(end - start).count()
               << "ms.\n";

@@ -12,7 +12,7 @@ class HashMap {
         const k Key;
         v value;
     };
-    std::vector<std::forward_list<Entry>> Buckets;
+    std::vector<std::forward_list<Entry>> Buckets; //Vecteur de d'entrees (cle, valeur)
 
 public:
     HashMap(size_t alloc);
@@ -27,8 +27,8 @@ HashMap<k, v>::HashMap(size_t alloc) : Buckets(alloc) {}
 
 template <typename k, typename v>
 bool HashMap<k, v>::put(const k& Key, const v& value) {
-    size_t n = std::hash<k>()(Key);
-    size_t target = n % Buckets.size();
+    size_t n = std::hash<k>()(Key); //hachage de la cle
+    size_t target = n % Buckets.size(); //revient au debut si depasse la taille
 
     for (auto &ent : Buckets[target]) {
         if (ent.Key == Key) {

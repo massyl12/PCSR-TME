@@ -16,7 +16,7 @@ void String::newcopy(const char* ori) {
     str = new char[len]; // Allouez la mémoire pour str
 
     char* it = str;
-    while (*ori) {
+    while (*ori) { //copie avec pointeurs
         *it = *ori;
         ++it;
         ++ori;
