@@ -24,6 +24,10 @@ void consomateur (Stack<char> * stack) {
 
 int main () {
 	Stack<char> * s = new Stack<char>();
+	/* Créé le segment en lecture écriture */
+	sem_t *mutex = sem_open("/mutex",O_CREAT|O_EXCL|O_RDWR,0600,1);
+	ftruncate(mutex, sizeof(struct myshm));
+	mutex= mmap(NULL, sizeof(struct myshm),PROT_READ | PROT_WRITE,MAP_SHARED,mutex, 0)
 	if(pid){
 		sem_unlink("/monsem0");
 	}
