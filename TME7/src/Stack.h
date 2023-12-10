@@ -1,5 +1,6 @@
 #pragma once
 
+#include <semaphore.h>
 #include <cstring> // size_t,memset
 
 namespace pr {
@@ -23,7 +24,7 @@ public :
 		 */ 
 		 sem_init(&mutex, 1, 1);
 		 sem_init(&sempush, 1, STACKSIZE);
-		 sem_init(&sempop, 1, 1, 0)
+		 sem_init(&sempop, 1, 1);
 		 }
 
 	~Stack() {
