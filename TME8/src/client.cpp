@@ -6,7 +6,7 @@
 
 int main00() {
 	pr::Socket sock;
-	sock.connect("localhost", 1664);
+	sock.connect("127.0.0.0", 1664);
 	int N=42;
 	write(sock.getFD(),&N,sizeof(int));
 	read(sock.getFD(),&N,sizeof(int));
@@ -20,7 +20,7 @@ int main0() {
 
 	pr::Socket sock;
 
-	sock.connect("localhost", 1664);
+	sock.connect("127.0.0.0", 1664);
 
 	if (sock.isOpen()) {
 		int fd = sock.getFD();
@@ -46,10 +46,8 @@ int main0() {
 
 // avec une boucle, on attend un 0
 int main() {
-
 	pr::Socket sock;
-
-	sock.connect("localhost", 1664);
+	sock.connect("127.0.0.0", 1664);
 
 	if (sock.isOpen()) {
 		int fd = sock.getFD();

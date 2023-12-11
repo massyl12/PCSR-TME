@@ -4,13 +4,14 @@
 
 int main00() {
 	pr::ServerSocket ss(1664);
-
 	while (1) {
 		pr::Socket sc = ss.accept();
 
 		int fd = sc.getFD();
 
 		int lu;
+
+		std::cout << "ok" << lu << std::endl;
 		read(fd, &lu, sizeof(int));
 		std::cout << "lu =" << lu << std::endl;
 		lu++;
@@ -26,9 +27,9 @@ int main() {
 
 	while (1) {
 		pr::Socket sc = ss.accept();
+		std::cout << "test" << std::endl;
 
 		int fd = sc.getFD();
-
 		ssize_t msz = sizeof(int);
 		while (1) {
 			int lu;

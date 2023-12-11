@@ -11,6 +11,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <iostream>
+
 
 namespace pr {
 
@@ -44,7 +46,7 @@ std::ostream & operator<< (std::ostream & os, struct sockaddr_in * addr){
 
 void Socket::connect(const std::string & host, int port){
 	struct addrinfo* res, *rp;
-	int s = getaddrinfo(host.c_str(),std::to_string(port).c_str(),AF_UNSPEC,&res);
+	int s = getaddrinfo(host.c_str(),std::to_string(port).c_str(),0,&res);
 	if (s != 0) {
 		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
 		exit(EXIT_FAILURE);
@@ -54,9 +56,11 @@ void Socket::connect(const std::string & host, int port){
 		if (fd == -1)
 			continue;
 
-		if (::connect(fd, rp->ai_addr, rp->ai_addrlen) != -1)
+		if (::connect(fd, rp->ai_addr, rp->ai_addrlen) != -1){
+			std::cout << "Connected to server" << std::endl;
 			break; /* Success */
-
+		}
+		perror("connect error");
 		::close(fd);
 	}
 
@@ -64,7 +68,7 @@ void Socket::connect(const std::string & host, int port){
 }
 
 void Socket::connect(sockaddr addr, socklen_t addr_len){
-	fd = socket(AF_UNSPEC, SOCK_STREAM, 0);
+	fd = socket(AF_INET, SOCK_STREAM, 0);
 	if(!fd){
 		perror("socket error");
 		exit(-1);
