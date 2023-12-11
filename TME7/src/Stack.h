@@ -24,7 +24,7 @@ public :
 		 */ 
 		 sem_init(&mutex, 1, 1);
 		 sem_init(&sempush, 1, STACKSIZE);
-		 sem_init(&sempop, 1, 1);
+		 sem_init(&sempop, 1, 0);
 		 }
 
 	~Stack() {
