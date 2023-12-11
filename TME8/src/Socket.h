@@ -4,14 +4,18 @@
 #include <netinet/ip.h>
 #include <string>
 #include <iosfwd>
+#include <sys/types.h>
+#include <sys/socket.h>
 
 namespace pr {
 
 class Socket {
 	int fd;
 
+
 public :
 	Socket():fd(-1){}
+	//socket (int domaine, int type, intprotocole);
 	Socket(int fd):fd(fd){}
 
 	// tente de se connecter à l'hôte fourni

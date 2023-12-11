@@ -13,6 +13,18 @@ void Banque::transfert(size_t deb, size_t cred, unsigned int val) {
 		crediteur.crediter(val);
 	}
 }
+
+void Banque::transfert_with_mutex(size_t deb, size_t cred, unsigned int val) {
+	Compte & debiteur = comptes[deb];
+	Compte & crediteur = comptes[cred];
+	debiteur.lock();
+	crediteur.lock();
+	if (debiteur.debiter(val)) {
+		crediteur.crediter(val);
+	}
+	debiteur.unlock();
+	crediteur.unlock();
+}
 size_t Banque::size() const {
 	return comptes.size();
 }
