@@ -1,15 +1,19 @@
 #include "Vec3D.h"
 #include "Rayon.h"
 #include "Scene.h"
+#include "Job.h"
+#include "Pool.h"
+#include "Barrier.h"
 #include <iostream>
 #include <algorithm>
 #include <fstream>
 #include <limits>
 #include <random>
+#include "Pool.h"
+#include "Barrier.h"
 
 using namespace std;
 using namespace pr;
-
 
 void fillScene(Scene & scene, default_random_engine & re) {
 	// Nombre de spheres (rend le probleme plus dur)
@@ -98,6 +102,57 @@ void exportImage(const char * path, size_t width, size_t height, Color * pixels)
 	img.close();
 }
 
+const int NbThreads = 3;
+//Barrier barrier(NbThreads);
+
+class RayTracingJob : public Job {
+	int x;
+	int y;
+	Scene scene;
+	const Scene::screen_t & screen;
+	vector<Vec3D> lights;
+	Color * pixels;
+
+	public :
+		RayTracingJob(int x,Scene scene,const Scene::screen_t & screen,vector<Vec3D> lights,Color * pixels):
+		x(x),scene(scene),screen(screen),lights(lights),pixels(pixels){}
+
+		~RayTracingJob(){}
+
+		void run(){
+			for (int y = 0 ; y < scene.getHeight() ; y++) {
+				// le point de l'ecran par lequel passe ce rayon
+				auto & screenPoint = screen[y][x];
+				// le rayon a inspecter
+				Rayon  ray(scene.getCameraPos(), screenPoint);
+				int targetSphere = findClosestInter(scene, ray);
+				if (targetSphere == -1) {
+					// keep background color
+				} else {
+					const Sphere & obj = *(scene.begin() + targetSphere);
+					// pixel prend la couleur de l'objet
+					Color finalcolor = computeColor(obj, ray, scene.getCameraPos(), lights);
+					// le point de l'image (pixel) dont on vient de calculer la couleur
+					Color & pixel = pixels[y*scene.getHeight() + x];
+					// mettre a jour la couleur du pixel dans l'image finale.
+					pixel = finalcolor;
+				}
+				cout << "x = " << x << " y = " << y << endl;
+				//barrier.await();
+			}
+		}
+};
+
+class BarrierJob : public Job {
+	Barrier& barrier;
+	public :
+		BarrierJob(Barrier& barrier) : barrier(barrier){}
+		~BarrierJob(){}
+		void run(){barrier.await();}
+};
+
+
+
 // NB : en francais pour le cours, preferez coder en english toujours.
 // pas d'accents pour eviter les soucis d'encodage
 
@@ -125,31 +180,43 @@ int main () {
 	// Les couleurs des pixels dans l'image finale
 	Color * pixels = new Color[scene.getWidth() * scene.getHeight()];
 
+/*
+	//Version avec une Queue non bloquante
+	Pool pool(NbThreads);
+
 	// pour chaque pixel, calculer sa couleur
 	for (int x =0 ; x < scene.getWidth() ; x++) {
-		for (int  y = 0 ; y < scene.getHeight() ; y++) {
-			// le point de l'ecran par lequel passe ce rayon
-			auto & screenPoint = screen[y][x];
-			// le rayon a inspecter
-			Rayon  ray(scene.getCameraPos(), screenPoint);
-
-			int targetSphere = findClosestInter(scene, ray);
-
-			if (targetSphere == -1) {
-				// keep background color
-				continue ;
-			} else {
-				const Sphere & obj = *(scene.begin() + targetSphere);
-				// pixel prend la couleur de l'objet
-				Color finalcolor = computeColor(obj, ray, scene.getCameraPos(), lights);
-				// le point de l'image (pixel) dont on vient de calculer la couleur
-				Color & pixel = pixels[y*scene.getHeight() + x];
-				// mettre a jour la couleur du pixel dans l'image finale.
-				pixel = finalcolor;
-			}
-
+		if(!pool.submit(new RayTracingJob(x,std::ref(scene),std::ref(screen),std::ref(lights),std::ref(pixels))))
+		{
+			pool.start(NbThreads);
+			pool.stop();
+			pool.submit(new RayTracingJob(x,std::ref(scene),std::ref(screen),std::ref(lights),std::ref(pixels)));
 		}
 	}
+
+	pool.start(NbThreads);
+	pool.stop();
+*/
+
+
+	//Version avec une Queue bloquante
+	Pool pool(15);
+	Barrier barrier(NbThreads);
+
+	pool.start(NbThreads);
+
+	// pour chaque pixel, calculer sa couleur
+	for (int x =0 ; x < scene.getWidth() ; x++) {
+		pool.submit(new RayTracingJob(x,std::ref(scene),std::ref(screen),std::ref(lights),std::ref(pixels)));
+		//cout << "x = " << x << endl;
+	}
+
+	for (int i =0 ; i < NbThreads ; i++) {
+		pool.submit(new BarrierJob(std::ref(barrier)));
+	}
+
+	pool.stop();
+
 
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 	    std::cout << "Total time "

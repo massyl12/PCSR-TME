@@ -12,8 +12,8 @@ public :
 	// Demarre l'ecoute sur le port donne
 	ServerSocket(int port);
 
-	int getFD() { return socketfd;}
-	bool isOpen() const {return socketfd != -1;}
+	int getFD();
+	bool isOpen() const;
 
 	Socket accept();
 
